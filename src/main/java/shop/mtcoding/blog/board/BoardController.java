@@ -36,6 +36,18 @@ public class BoardController {
         return "redirect:/";
     }
 
+    @PostMapping("/board/{id}/delete")
+    public String delete(@PathVariable int id, HttpServletRequest request) {
+        User sessionUser = (User) session.getAttribute("sessionUser");
+        if (sessionUser == null) {
+            return "redirect:/loginForm";
+        }
+
+        boardRepository.deleteById(id);
+        return "redirect:/";
+    }
+
+
 
     @GetMapping({ "/"})
     public String index(HttpServletRequest request) {
