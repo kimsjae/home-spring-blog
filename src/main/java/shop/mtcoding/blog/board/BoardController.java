@@ -1,10 +1,12 @@
 package shop.mtcoding.blog.board;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import shop.mtcoding.blog.user.User;
 
 import java.util.List;
 
@@ -12,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardController {
     private final BoardRepository boardRepository;
+    private final HttpSession session;
 
     @GetMapping({ "/"})
     public String index(HttpServletRequest request) {
@@ -30,6 +33,11 @@ public class BoardController {
 
     @GetMapping("/board/saveForm")
     public String saveForm() {
+        User sessionUser = (User) session.getAttribute("sessionUser");
+
+        if (sessionUser == null) {
+            return "redirect:/loginForm";
+        }
         return "board/saveForm";
     }
 
