@@ -2,6 +2,7 @@ package shop.mtcoding.blog.board;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -39,5 +40,15 @@ public class BoardRepository {
         detailDTO.setUsername(username);
 
         return detailDTO;
+    }
+
+    @Transactional
+    public void save(BoardRequest.SaveDTO saveDTO, int userId) {
+        Query query = em.createNativeQuery("insert into board_tb(title, content, user_id, created_at) values(?,?,?, now())");
+        query.setParameter(1, saveDTO.getTitle());
+        query.setParameter(2, saveDTO.getContent());
+        query.setParameter(3, userId);
+
+        query.executeUpdate();
     }
 }

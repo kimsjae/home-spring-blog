@@ -22,15 +22,21 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(UserRequest.LoginDTO loginDTO) {
+    public String login(UserRequest.LoginDTO loginDTO, HttpServletRequest request) {
         System.out.println(loginDTO);
 
-        if (loginDTO.getUsername().length() < 2) return "error/400";
+        if (loginDTO.getUsername().length() < 2) {
+            request.setAttribute("status", 400);
+            request.setAttribute("msg", "username은 2자보다 커야합니다.");
+            return "error/40x";
+        }
 
         User user = userRepository.findByUsernameAndPassword(loginDTO);
 
         if (user == null) {
-            return "error/400";
+            request.setAttribute("status", 400);
+            request.setAttribute("msg", "회원정보가 일치하지 않습니다.");
+            return "error/40x";
         } else {
             session.setAttribute("sessionUser", user);
         }
