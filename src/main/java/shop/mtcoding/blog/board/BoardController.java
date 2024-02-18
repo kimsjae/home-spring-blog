@@ -48,7 +48,22 @@ public class BoardController {
     @GetMapping("/board/{id}")
     public String detail(@PathVariable int id, HttpServletRequest request) {
         BoardResponse.DetailDTO detailDTO = boardRepository.findById(id);
+
+        User sessionUser = (User) session.getAttribute("sessionUser");
+
+        boolean pageOwner;
+
+        if (sessionUser == null) {
+            pageOwner = false;
+        } else {
+            int userId = detailDTO.getUserId();
+            int loginId = sessionUser.getId();
+            pageOwner = userId == loginId;
+        }
+
         request.setAttribute("board", detailDTO);
+        request.setAttribute("pageOwner", pageOwner);
+
         return "board/detail";
     }
 
