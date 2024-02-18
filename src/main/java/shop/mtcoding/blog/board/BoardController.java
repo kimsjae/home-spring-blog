@@ -48,7 +48,6 @@ public class BoardController {
     }
 
 
-
     @GetMapping({ "/"})
     public String index(HttpServletRequest request) {
         List<Board> boardList = boardRepository.findAll();
@@ -78,6 +77,46 @@ public class BoardController {
 
         return "board/detail";
     }
+
+    @GetMapping("/board/{id}/updateForm")
+    public String updateForm(@PathVariable int id, HttpServletRequest request) {
+        User sessionUser = (User) session.getAttribute("sessionUser");
+        if (sessionUser == null) {
+            return "redirect:/loginForm";
+        }
+
+        BoardResponse.DetailDTO board = boardRepository.findById(id);
+        if (board.getUserId() != sessionUser.getId()) {
+            request.setAttribute("status", 403);
+            request.setAttribute("msg", "권한이 없습니다.");
+            return "error/40x";
+        }
+
+        request.setAttribute("board", board);
+
+        return "board/updateForm";
+    }
+
+    @PostMapping("/board/{id}/update")
+    public String update(@PathVariable int id, BoardRequest.UpdateDTO updateDTO, HttpServletRequest request) {
+        User sessionUser = (User) session.getAttribute("sessionUser");
+        if (sessionUser == null) {
+            return "redirect:/loginForm";
+        }
+
+        BoardResponse.DetailDTO board = boardRepository.findById(id);
+        if (board.getUserId() != sessionUser.getId()) {
+            request.setAttribute("status", 403);
+            request.setAttribute("msg", "권한 없음");
+            return "error/40x";
+        }
+
+        boardRepository.update(updateDTO, id);
+
+        return "redirect:/board/" + id;
+    }
+
+
 
     @GetMapping("/board/saveForm")
     public String saveForm() {
