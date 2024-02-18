@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
 public class BoardController {
     private final BoardRepository boardRepository;
 
-    @GetMapping({ "/", "/board" })
+    @GetMapping({ "/"})
     public String index(HttpServletRequest request) {
         List<Board> boardList = boardRepository.findAll();
         request.setAttribute("boardList", boardList);
@@ -20,13 +21,17 @@ public class BoardController {
         return "index";
     }
 
+    @GetMapping("/board/{id}")
+    public String detail(@PathVariable int id, HttpServletRequest request) {
+        BoardResponse.DetailDTO detailDTO = boardRepository.findById(id);
+        request.setAttribute("board", detailDTO);
+        return "board/detail";
+    }
+
     @GetMapping("/board/saveForm")
     public String saveForm() {
         return "board/saveForm";
     }
 
-    @GetMapping("/board/1")
-    public String detail() {
-        return "board/detail";
-    }
+
 }
